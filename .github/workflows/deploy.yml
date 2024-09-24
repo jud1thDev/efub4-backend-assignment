@@ -3,7 +3,7 @@ name: CI/CD with Docker
 
 on:
   push:
-    branches: [ "main", "member/jud1th" ]
+    branches: [ "main", "member/jud1thdev" ]
 
 jobs:
   deploy:
@@ -19,6 +19,7 @@ jobs:
 
       - name: Make application.yml
         run: |
+          mkdir -p ./community/src/main/resources # 디렉토리가 없으면 생
           cd ./community/src/main/resources
           touch ./application.yml
           echo "${{ secrets.APPLICATION }}" > ./application.yml
