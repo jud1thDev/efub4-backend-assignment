@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-focal
+FROM openjdk:17-slim
 
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
