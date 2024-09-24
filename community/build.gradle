@@ -11,6 +11,10 @@ java {
 	sourceCompatibility = '17'
 }
 
+tasks.named('jar') {
+	enabled = true
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
