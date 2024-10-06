@@ -17,7 +17,7 @@ public class PostResponseDto {
     private String writerNickname;
     private String title;
     private String content;
-    private String writerOpen;
+    private Boolean writerOpen;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 

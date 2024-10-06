@@ -24,8 +24,8 @@ public class PostRequestDto {
     @NotBlank(message = "내용은 필수입니다.")
     private String content;
 
-    @Value("${writer.open:false}")
-    private String writerOpen;
+    @NotBlank
+    private Boolean writerOpen;
 
     public Post toEntity(Board board, Account account){
         return Post.builder()

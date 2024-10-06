@@ -62,7 +62,7 @@ public class PostController {
         return PostResponseDto.from(post, post.getAccount().getNickname(), post.getBoard().getBoardId());
     }
 
-    @PutMapping("/posts/{post_id}")
+    @PatchMapping("/posts/{post_id}")
     @ResponseStatus(value = HttpStatus.OK)
     public PostResponseDto updatePost(@PathVariable(name="post_id")Long post_id,
                                       @RequestBody @Valid PostUpdateDto dto){
