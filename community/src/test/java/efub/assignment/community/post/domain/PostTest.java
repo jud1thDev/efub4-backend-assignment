@@ -69,8 +69,30 @@ class PostTest {
                 () -> assertEquals(account, post.getAccount()),
                 () -> assertEquals(board, post.getBoard())
         );
-
     }
+
+    @Test
+    @DisplayName("Post 생성 실패 - 제목 글자 수 초과")
+    void createPostWithLongTitle() {
+        // given
+        String longTitle = "제목".repeat(30);
+        String content = "내용내용";
+        Boolean writerOpen = true;
+
+        // when & then
+        assertThrows(Exception.class, () -> {
+            Post post = Post.builder()
+                    .account(account)
+                    .board(board)
+                    .title(longTitle)
+                    .content(content)
+                    .writerOpen(writerOpen)
+                    .build();
+            entityManager.persist(post);
+            entityManager.flush();
+        });
+    }
+
 
 
 }
