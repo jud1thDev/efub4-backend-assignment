@@ -9,7 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -18,8 +21,12 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 class PostRepositoryTest {
+    @Autowired
+    private TestEntityManager testEntityManager;
+
     @Autowired
     private PostRepository postRepository;
 
@@ -41,7 +48,7 @@ class PostRepositoryTest {
                 .university("이화여자대학교")
                 .studentId("1234567")
                 .build();
-        accountRepository.save(account);
+        testEntityManager.persist(account);
 
         board = Board.builder()
                 .account(account)
@@ -49,12 +56,13 @@ class PostRepositoryTest {
                 .boardDescription("테스트 설명")
                 .boardNotice("테스트 공지사항")
                 .build();
-        boardRepository.save(board);
+        testEntityManager.persist(board);
+        testEntityManager.flush();
     }
 
     @Test
     @DisplayName("writerOpen이 true인 Post 조회 - 성공")
-    void findOpenPostsSuccessfully() {
+    void findPublicPost() {
         // given
         String title1 = "공개 게시글";
         String content1 = "이건 보여야 함";
@@ -71,7 +79,7 @@ class PostRepositoryTest {
                 .content(content1)
                 .writerOpen(writerOpen1)
                 .build();
-        postRepository.save(publicPost);
+        testEntityManager.persist(publicPost);
 
         Post privatePost = Post.builder()
                 .account(account)
@@ -80,7 +88,8 @@ class PostRepositoryTest {
                 .content(content2)
                 .writerOpen(writerOpen2)
                 .build();
-        postRepository.save(privatePost);
+        testEntityManager.persist(privatePost);
+        testEntityManager.flush();
 
         // when
         List<Post> openPosts = postRepository.findByWriterOpen(true);
@@ -102,9 +111,11 @@ class PostRepositoryTest {
                 .content("내용")
                 .writerOpen(true)
                 .build();
-        postRepository.save(post);
+        testEntityManager.persist(post);
+        testEntityManager.flush();
         Long deletedId = post.getPostId();
         postRepository.delete(post);
+        testEntityManager.flush();
 
         // when
         Optional<Post> searchPost = postRepository.findById(deletedId);

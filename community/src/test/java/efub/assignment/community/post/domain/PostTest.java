@@ -2,43 +2,47 @@ package efub.assignment.community.post.domain;
 
 import efub.assignment.community.account.domain.Account;
 import efub.assignment.community.board.domain.Board;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 class PostTest {
 
     @Autowired
-    private EntityManager entityManager;
+    private TestEntityManager testEntityManager;
 
     private Account account;
     private Board board;
 
     @BeforeEach
     void setup(){
-        Account account = Account.builder()
+        account = Account.builder()
                 .email("test@test.com")
                 .password("password123")
                 .nickname("fubie")
                 .university("이화여자대학교")
                 .studentId("1234567")
                 .build();
-        entityManager.persist(account);
+        testEntityManager.persist(account);
         board = Board.builder()
                 .account(account)
                 .boardName("테스트 게시판")
                 .boardDescription("테스트 설명")
                 .boardNotice("테스트 공지사항")
                 .build();
-        entityManager.persist(board);
+        testEntityManager.persist(board);
+        testEntityManager.flush();
     }
 
     @Test
@@ -57,8 +61,8 @@ class PostTest {
                 .content(content)
                 .writerOpen(writerOpen)
                 .build();
-
-        entityManager.persist(post);
+        testEntityManager.persist(post);
+        testEntityManager.flush();
 
         // then
         assertAll("Post 필드 값 검증",
@@ -88,8 +92,8 @@ class PostTest {
                     .content(content)
                     .writerOpen(writerOpen)
                     .build();
-            entityManager.persist(post);
-            entityManager.flush();
+            testEntityManager.persist(post);
+            testEntityManager.flush();
         });
     }
 
